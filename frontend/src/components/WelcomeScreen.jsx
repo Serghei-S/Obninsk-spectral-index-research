@@ -7,9 +7,11 @@ function WelcomeScreen({ onStart }) {
       <div className="welcome-overlay" />
       
       <div className="welcome-content">
-        <div className="welcome-logo">🌾</div>
+        <div className="welcome-logo">
+          <img src="/farmer-bot.png" alt="R2-Фермер" className="welcome-logo-img" />
+        </div>
         
-        <h1 className="welcome-title">AgroSky Insight</h1>
+        <h1 className="welcome-title">R2-Фермер</h1>
         
         <p className="welcome-subtitle">
           Мониторинг здоровья сельскохозяйственных полей

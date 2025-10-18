@@ -22,9 +22,11 @@ function Header() {
     <header className="header">
       <div className="header-content">
         <Link to="/" className="header-logo-link">
-          <div className="header-logo">🌾</div>
+          <div className="header-logo">
+            <img src="/farmer-bot.png" alt="R2-Фермер" className="header-logo-img" />
+          </div>
           <div className="header-text">
-            <h1>AgroSky Insight</h1>
+            <h1>R2-Фермер</h1>
             <p>Мониторинг сельскохозяйственных полей</p>
           </div>
         </Link>

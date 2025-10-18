@@ -61,7 +61,7 @@ function RegisterForm({ onSuccess, onSwitchToLogin }) {
       <div className="register-form-card">
         <div className="register-form-header">
           <h2>Регистрация</h2>
-          <p>Создайте аккаунт для доступа к AgroSky Insight</p>
+          <p>Создайте аккаунт для доступа к R2-Фермер</p>
         </div>
 
         <form onSubmit={handleSubmit} className="register-form">

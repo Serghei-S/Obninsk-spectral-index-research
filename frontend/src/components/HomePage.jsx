@@ -34,8 +34,8 @@ function HomePage() {
     <div className="home-page">
       <div className="home-header">
         <h1 className="home-title">
-          <span className="home-icon">🌾</span>
-          AgroSky Insight
+          <img src="/farmer-bot.png" alt="R2-Фермер" className="home-icon-img" />
+          R2-Фермер
         </h1>
         <p className="home-subtitle">
           Система мониторинга сельскохозяйственных полей на основе спутниковых данных Sentinel-2
