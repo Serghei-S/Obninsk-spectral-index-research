@@ -24,6 +24,7 @@ except ImportError:
     pass  # config.py not found or credentials not set
 
 from api.routes import router as api_router
+from api.forecast_routes import router as forecast_router
 from auth.routes import router as auth_router
 from database import Base, engine
 
@@ -70,6 +71,7 @@ app.mount("/results", StaticFiles(directory="results"), name="results")
 # Include API routes
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(api_router, prefix="/api/v1")
+app.include_router(forecast_router, prefix="/api/v1/forecast", tags=["ML Forecast"])
 
 
 @app.get("/")

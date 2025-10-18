@@ -132,6 +132,31 @@ class AIService {
   }
 
   /**
+   * Generate ML forecast for vegetation index time series
+   * 
+   * @param {Array} historicalData - Array of {date, value} objects
+   * @param {string} indexName - Index name (NDVI, EVI, etc.)
+   * @param {number} forecastHorizonDays - Forecast horizon (7-90 days)
+   * @returns {Promise<Object>} Forecast response with historical, interpolated and forecast data
+   * @throws {Error} If request fails
+   */
+  async forecastTimeSeries(historicalData, indexName, forecastHorizonDays = 30) {
+    try {
+      const response = await api.post('/api/v1/forecast/indices', {
+        index_name: indexName,
+        historical_data: historicalData,
+        forecast_horizon_days: forecastHorizonDays
+      }, {
+        timeout: 60000 // 60 seconds timeout for ML training and prediction
+      });
+      
+      return response.data;
+    } catch (error) {
+      this._handleError(error, 'Failed to generate forecast');
+    }
+  }
+
+  /**
    * Build AIAnalysisContext from application state
    * Helper method to construct context payload from various data sources
    * 

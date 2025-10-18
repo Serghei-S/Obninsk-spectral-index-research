@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import api from '../utils/api'
+import aiService from '../utils/aiService'
 import { Line } from 'react-chartjs-2'
 import {
   Chart as ChartJS,
@@ -43,6 +44,10 @@ function TimeSeriesModal({ selectedGeometry, onClose }) {
   const [rawData, setRawData] = useState(null) // Store raw data for CSV export
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [forecastData, setForecastData] = useState(null) // ML Forecast data
+  const [isForecastLoading, setIsForecastLoading] = useState(false)
+  const [forecastHorizon, setForecastHorizon] = useState(30) // Forecast horizon in days
+  const [showForecast, setShowForecast] = useState(false)
 
   useEffect(() => {
     // Set default dates to last 3 months
@@ -143,6 +148,121 @@ function TimeSeriesModal({ selectedGeometry, onClose }) {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleGenerateForecast = async () => {
+    if (!rawData || rawData.length === 0 || !chartData) {
+      setError('Сначала загрузите данные временного ряда')
+      return
+    }
+
+    // Only forecast the first selected index for simplicity
+    const indexToForecast = selectedIndices[0]
+    const dataToForecast = rawData[0] // First index data
+
+    // Prepare historical data in required format: [{date, value}, ...]
+    const historicalData = dataToForecast.dates.map((date, index) => ({
+      date: date,
+      value: dataToForecast.values[index]
+    }))
+
+    // Validate minimum data points
+    if (historicalData.length < 10) {
+      setError('Недостаточно исторических данных. Требуется минимум 10 наблюдений для прогнозирования.')
+      return
+    }
+
+    setIsForecastLoading(true)
+    setError(null)
+
+    try {
+      const forecastResponse = await aiService.forecastTimeSeries(
+        historicalData,
+        indexToForecast,
+        forecastHorizon
+      )
+
+      setForecastData(forecastResponse)
+      setShowForecast(true)
+
+      // Update chart to include forecast
+      updateChartWithForecast(forecastResponse, indexToForecast)
+    } catch (err) {
+      console.error('Error generating forecast:', err)
+      setError(err.message || 'Ошибка при генерации прогноза')
+    } finally {
+      setIsForecastLoading(false)
+    }
+  }
+
+  const updateChartWithForecast = (forecastResponse, indexName) => {
+    const indexConfig = VEGETATION_INDICES_OPTIONS.find(opt => opt.value === indexName)
+    
+    // Separate historical, interpolated, and forecast data
+    const historicalPoints = forecastResponse.forecast.filter(p => p.type === 'Historical')
+    const interpolatedPoints = forecastResponse.forecast.filter(p => p.type === 'Interpolated')
+    const forecastPoints = forecastResponse.forecast.filter(p => p.type === 'Forecast')
+
+    // Create datasets
+    const newDatasets = []
+
+    // Historical data dataset
+    if (historicalPoints.length > 0) {
+      newDatasets.push({
+        label: `${indexName} (Исторические)`,
+        data: historicalPoints.map(p => ({ x: p.date, y: p.value })),
+        fill: false,
+        backgroundColor: indexConfig.color,
+        borderColor: indexConfig.color,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointStyle: 'circle',
+        borderWidth: 3,
+        tension: 0,
+      })
+    }
+
+    // Interpolated data dataset (if any)
+    if (interpolatedPoints.length > 0) {
+      newDatasets.push({
+        label: `${indexName} (Интерполированные)`,
+        data: interpolatedPoints.map(p => ({ x: p.date, y: p.value })),
+        fill: false,
+        backgroundColor: '#9ca3af',
+        borderColor: '#9ca3af',
+        pointRadius: 3,
+        pointHoverRadius: 5,
+        pointStyle: 'crossRot',
+        borderWidth: 2,
+        borderDash: [5, 5],
+        tension: 0.4,
+      })
+    }
+
+    // Forecast data dataset
+    if (forecastPoints.length > 0) {
+      newDatasets.push({
+        label: `${indexName} (Прогноз ML)`,
+        data: forecastPoints.map(p => ({ x: p.date, y: p.value })),
+        fill: true,
+        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+        borderColor: '#a855f7',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointStyle: 'rectRot',
+        borderWidth: 3,
+        borderDash: [10, 5],
+        tension: 0.4,
+      })
+    }
+
+    // Extract all dates for x-axis
+    const allDates = forecastResponse.forecast.map(p => p.date)
+
+    setChartData({
+      labels: allDates,
+      datasets: newDatasets,
+    })
   }
 
   const options = {
@@ -385,6 +505,54 @@ function TimeSeriesModal({ selectedGeometry, onClose }) {
                 'Анализировать динамику'
               )}
             </button>
+
+            {chartData && !showForecast && (
+              <div className="ts-forecast-controls">
+                <label className="ts-label">
+                  Горизонт прогноза (дней):
+                  <input
+                    type="number"
+                    min="7"
+                    max="90"
+                    value={forecastHorizon}
+                    onChange={(e) => setForecastHorizon(Number(e.target.value))}
+                    className="ts-input-small"
+                  />
+                </label>
+                <button
+                  onClick={handleGenerateForecast}
+                  className="btn btn-secondary ts-forecast-btn"
+                  disabled={isForecastLoading}
+                  title="Прогноз на основе ML (Gradient Boosting)"
+                >
+                  {isForecastLoading ? (
+                    <>
+                      <span className="spinner-small"></span>
+                      Генерация прогноза...
+                    </>
+                  ) : (
+                    <>🤖 ML Прогноз ({selectedIndices[0]})</>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {showForecast && forecastData && (
+              <div className="ts-forecast-info">
+                <p>✅ Прогноз сгенерирован: <strong>{selectedIndices[0]}</strong> на <strong>{forecastHorizon} дней</strong></p>
+                <p>Модель: <em>{forecastData.metadata.model_type}</em></p>
+                <button
+                  onClick={() => {
+                    setShowForecast(false)
+                    setForecastData(null)
+                    handleAnalyzeDynamics() // Reload original data
+                  }}
+                  className="btn btn-small"
+                >
+                  Вернуться к исходным данным
+                </button>
+              </div>
+            )}
           </div>
 
           {error && <div className="error-message">{error}</div>}
