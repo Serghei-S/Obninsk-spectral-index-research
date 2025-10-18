@@ -28,8 +28,8 @@ function LatestNdviMapWidget({ item, onDelete }) {
       })
 
       // Convert relative URL to absolute
-      const baseURL = api.defaults.baseURL || 'http://localhost:8000'
-      setImageUrl(baseURL + response.data.image_url)
+      // baseURL теперь пустой, поэтому просто используем image_url напрямую
+      setImageUrl(response.data.image_url)
       setStats(response.data.stats)
     } catch (err) {
       console.error('Error loading NDVI map:', err)

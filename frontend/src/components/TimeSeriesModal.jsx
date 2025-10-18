@@ -96,13 +96,15 @@ function TimeSeriesModal({ selectedGeometry, onClose }) {
     setIsLoading(true)
 
     try {
-      // Fetch data for all selected indices in parallel
+      // Fetch data for all selected indices in parallel with extended timeout
       const requests = selectedIndices.map(indexType => 
         api.post('/api/v1/analyze/timeseries', {
           geometry: selectedGeometry,
           start_date: startDate,
           end_date: endDate,
           index_type: indexType,
+        }, {
+          timeout: 300000 // 5 minutes timeout for long time series
         })
       )
 

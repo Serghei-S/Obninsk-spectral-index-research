@@ -2,10 +2,11 @@
 AgroSky Insight - Backend API
 FastAPI application for satellite data analysis
 """
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.exceptions import RequestValidationError
 import uvicorn
 from pathlib import Path
 import logging
@@ -67,6 +68,17 @@ results_dir.mkdir(exist_ok=True)
 
 # Mount static files for results
 app.mount("/results", StaticFiles(directory="results"), name="results")
+
+# Добавляем exception handler для ValidationError
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    logger.error(f"❌ Validation error for {request.url.path}:")
+    logger.error(f"Body: {await request.body()}")
+    logger.error(f"Errors: {exc.errors()}")
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={"detail": exc.errors(), "body": str(await request.body())}
+    )
 
 # Include API routes
 app.include_router(auth_router, prefix="/api/v1")

@@ -1,8 +1,10 @@
 import axios from 'axios'
 
-// Create axios instance
+// Create axios instance with dynamic baseURL
+// Пустой baseURL означает, что запросы идут на текущий домен
+// Это позволяет работать как на localhost, так и через ngrok
 const api = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: '', // Запросы идут на текущий домен (работает везде!)
   headers: {
     'Content-Type': 'application/json'
   }

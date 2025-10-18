@@ -284,7 +284,7 @@ function Sidebar({
                   {/* Show image */}
                   <div className="index-image">
                     <img 
-                      src={`http://localhost:8000${imageUrl}`} 
+                      src={imageUrl} 
                       alt={`${indexName} visualization`}
                       style={{ width: '100%', borderRadius: '8px', marginTop: '0.5rem' }}
                     />

@@ -36,6 +36,19 @@ services:
     networks:
       - agrosky-network
 
+  nginx-proxy:
+    image: nginx:alpine
+    container_name: agrosky-nginx-proxy
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - agrosky-network
+
 volumes:
   backend-results:
 

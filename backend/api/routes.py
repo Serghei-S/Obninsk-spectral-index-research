@@ -254,17 +254,18 @@ async def analyze_timeseries(request: TimeSeriesRequest):
         # Determine interval based on date range
         days_diff = (end_date - start_date).days
         
-        # Limit maximum number of data points to 20 to prevent long processing
-        max_points = 20
+        # Limit maximum number of data points to prevent long processing
+        # Reduced to 10 points for faster response
+        max_points = 10
         
         if days_diff <= 30:
-            interval = max(5, days_diff // max_points)  # Every 5 days minimum
+            interval = max(7, days_diff // max_points)  # Every week minimum
         elif days_diff <= 90:
-            interval = max(10, days_diff // max_points)  # Every 10 days minimum
+            interval = max(14, days_diff // max_points)  # Every 2 weeks minimum
         elif days_diff <= 180:
-            interval = max(10, days_diff // max_points)  # Adaptive interval
+            interval = max(21, days_diff // max_points)  # Every 3 weeks
         else:
-            interval = max(15, days_diff // max_points)  # Long ranges
+            interval = max(30, days_diff // max_points)  # Monthly for long ranges
         
         logger.info(f"Using interval of {interval} days for {days_diff} days range")
         
@@ -866,7 +867,9 @@ async def generate_ai_report(
         AIReportResponse with generated Markdown report
     """
     try:
-        logger.info(f"AI report requested by user {current_user.id} for field: {request.context.field_info.name}")
+        logger.info(f"✅ AI report request received from user {current_user.id}")
+        logger.info(f"Field: {request.context.field_info.name}, Area: {request.context.field_info.area_ha} ha")
+        logger.info(f"NDVI stats: mean={request.context.indices_summary.NDVI.mean}, std_dev={request.context.indices_summary.NDVI.std_dev}")
         
         # Check if AI service is available
         if not ai_agronomist_service.is_available():

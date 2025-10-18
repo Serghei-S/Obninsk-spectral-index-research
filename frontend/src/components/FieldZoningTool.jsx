@@ -33,7 +33,7 @@ function FieldZoningTool({ analysisId, fieldId, onZonesCreated }) {
         throw new Error('Необходимо указать analysis_id или field_id');
       }
 
-      const response = await fetch('http://localhost:8000/api/v1/analyze/zones', {
+      const response = await fetch('/api/v1/analyze/zones', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -183,7 +183,7 @@ function FieldZoningTool({ analysisId, fieldId, onZonesCreated }) {
             <h5>💾 Скачать зоны:</h5>
             <div className="download-buttons">
               <a
-                href={`http://localhost:8000${zoneData.download_links.geojson}`}
+                href={zoneData.download_links.geojson}
                 className="btn-download geojson"
                 download
               >
@@ -191,7 +191,7 @@ function FieldZoningTool({ analysisId, fieldId, onZonesCreated }) {
                 GeoJSON
               </a>
               <a
-                href={`http://localhost:8000${zoneData.download_links.shapefile}`}
+                href={zoneData.download_links.shapefile}
                 className="btn-download shapefile"
                 download
               >

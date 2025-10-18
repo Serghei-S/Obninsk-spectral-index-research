@@ -59,3 +59,8 @@ backend/results/
 # OS
 Thumbs.db
 .DS_Store
+
+# ngrok
+ngrok.exe
+ngrok.zip
+*.backup

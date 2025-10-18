@@ -23,11 +23,11 @@ export const AuthProvider = ({ children }) => {
       
       if (token) {
         try {
-          const response = await fetch('http://localhost:8000/api/v1/auth/me', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          })
+        const response = await fetch('/api/v1/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
 
           if (response.ok) {
             const data = await response.json()
@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }) => {
     setError(null)
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/auth/register', {
+      const response = await fetch('/api/v1/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }) => {
     setError(null)
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/auth/login', {
+      const response = await fetch('/api/v1/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -100,7 +100,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('access_token', data.access_token)
 
       // Fetch user data
-      const userResponse = await fetch('http://localhost:8000/api/v1/auth/me', {
+      const userResponse = await fetch('/api/v1/auth/me', {
         headers: {
           'Authorization': `Bearer ${data.access_token}`
         }

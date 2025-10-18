@@ -163,13 +163,15 @@ function MapPage() {
             max: analysisResult.stats.max_ndvi || 1
           },
           additionalIndicesStats: analysisResult.stats.indices_stats || null,
-          zones: analysisResult.stats.zones_percent ? Object.entries(analysisResult.stats.zones_percent).map(([zone, percent], idx) => ({
-            id: idx + 1,
-            label: zone,
-            area_ha: (analysisResult.stats.area_ha * percent) / 100,
-            percentage: percent,
-            mean_NDVI: zone.includes('low') ? 0.2 : zone.includes('medium') ? 0.45 : 0.75
-          })) : null,
+          zones: analysisResult.stats.zones_percent ? Object.entries(analysisResult.stats.zones_percent)
+            .filter(([zone, percent]) => percent > 0) // Фильтруем зоны с нулевой площадью
+            .map(([zone, percent], idx) => ({
+              id: idx + 1,
+              label: zone,
+              area_ha: Math.max(0.01, (analysisResult.stats.area_ha * percent) / 100), // Минимум 0.01 га
+              percentage: percent,
+              mean_NDVI: zone.includes('low') ? 0.2 : zone.includes('medium') ? 0.45 : 0.75
+            })) : null,
           temporalAnalysis: null
         });
 

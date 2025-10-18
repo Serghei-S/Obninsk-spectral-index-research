@@ -20,7 +20,7 @@ class AIService {
       const response = await api.post('/api/v1/analysis/ai_report', {
         context: context
       }, {
-        timeout: 90000 // 90 seconds timeout for AI generation
+        timeout: 180000 // 180 seconds (3 minutes) timeout for AI generation
       });
       
       return response.data;

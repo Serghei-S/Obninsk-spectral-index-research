@@ -163,7 +163,7 @@ function MapView({ onGeometrySelected, analysisResult, onClearSelection }) {
         {/* Display NDVI result as image overlay */}
         {analysisResult?.image_url && analysisResult?.bounds && (
           <ImageOverlay
-            url={`http://localhost:8000${analysisResult.image_url}`}
+            url={analysisResult.image_url}
             bounds={analysisResult.bounds}
             opacity={0.7}
           />
