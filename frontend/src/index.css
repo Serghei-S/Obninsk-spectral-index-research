@@ -87,6 +87,33 @@ code {
   border-radius: 12px;
 }
 
+/* Скрытие блока атрибуции Leaflet (флаг и ссылки внизу слева) */
+.leaflet-control-attribution {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Дополнительное скрытие всех дочерних элементов атрибуции */
+.leaflet-control-attribution * {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Скрытие контейнера нижних контролов */
+.leaflet-bottom.leaflet-left {
+  display: none !important;
+}
+
+/* Альтернативное скрытие через класс контейнера */
+.leaflet-control-container .leaflet-bottom.leaflet-left {
+  display: none !important;
+}
+
 .leaflet-control-zoom {
   border: none !important;
   box-shadow: var(--shadow-md) !important;
