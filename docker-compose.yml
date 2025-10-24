@@ -14,7 +14,7 @@ services:
       - SENTINEL_CLIENT_SECRET=QZSOjOPB0h2kaP4kCK5MeSDW1DpKfaKg
       - SENTINEL_INSTANCE_ID=
       - GEMINI_API_KEY=AIzaSyBXimThiz3TYzXSSFFCPftSzxQA1-X3WgU
-      - GEMINI_MODEL=gemini-2.5-pro
+      - GEMINI_MODEL=gemini-1.5-pro
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     networks:
       - agrosky-network

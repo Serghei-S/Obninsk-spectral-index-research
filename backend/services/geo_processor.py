@@ -446,11 +446,28 @@ class GeoProcessor:
         fig, ax = plt.subplots(figsize=(10, 10), dpi=150)
         
         # Plot index with colormap (mask invalid values)
+        # Use better normalization for visualization
+        from matplotlib.colors import Normalize
+        
+        # Filter out NaN and extreme values
+        valid_data = data_array[~np.isnan(data_array)]
+        if len(valid_data) > 0:
+            # Use data-driven normalization for better contrast
+            data_min = np.percentile(valid_data, 2)  # 2nd percentile
+            data_max = np.percentile(valid_data, 98)  # 98th percentile
+            # But respect the index range
+            vmin_used = max(vmin, data_min)
+            vmax_used = min(vmax, data_max)
+        else:
+            vmin_used = vmin
+            vmax_used = vmax
+        
+        norm = Normalize(vmin=vmin_used, vmax=vmax_used, clip=True)
+        
         im = ax.imshow(
             np.ma.masked_invalid(data_array),
             cmap=cmap,
-            vmin=vmin,
-            vmax=vmax,
+            norm=norm,
             interpolation='bilinear'
         )
         

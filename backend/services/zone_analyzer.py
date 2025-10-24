@@ -3,10 +3,21 @@ Zone Analyzer Service
 Handles field zoning based on NDVI clustering using K-Means algorithm
 """
 import numpy as np
-import rasterio
-from rasterio.features import shapes
+try:
+    import rasterio
+    from rasterio.features import shapes
+    HAS_RASTERIO = True
+except ImportError:
+    HAS_RASTERIO = False
+    print("WARNING: rasterio not available. Zone analysis features will be limited.")
+
 from sklearn.cluster import KMeans
-import geopandas as gpd
+try:
+    import geopandas as gpd
+    HAS_GEOPANDAS = True
+except ImportError:
+    HAS_GEOPANDAS = False
+    
 from shapely.geometry import shape, mapping
 import logging
 from pathlib import Path
