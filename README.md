@@ -118,7 +118,7 @@
 
 ### Анализ динамики
 <p align="center">
-  <img src="docs/screenshots/timeseries.png" alt="График динамики" width="800"/>
+  <img src="docs/screenshots/timeseries.jpg" alt="График динамики" width="800"/>
 </p>
 
 *График изменения вегетационных индексов NDVI и EVI за год. Видна сезонная динамика: рост весной (март-июль), пик в середине лета, спад осенью*
