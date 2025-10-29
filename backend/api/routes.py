@@ -150,7 +150,7 @@ async def analyze_field(request: AnalysisRequest):
                             "mean": float(np.mean(valid_data)),
                             "min": float(np.min(valid_data)),
                             "max": float(np.max(valid_data)),
-                            "std": float(np.std(valid_data))
+                            "std_dev": float(np.std(valid_data))
                         }
                     
                     # Generate visualization
